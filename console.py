@@ -1,6 +1,7 @@
 #!/usr/bin/python3
 """This is the console for AirBnB"""
 import cmd
+from sys import argv
 from models import storage
 from datetime import datetime
 from models.base_model import BaseModel
@@ -43,6 +44,15 @@ class HBNBCommand(cmd.Cmd):
                 raise SyntaxError()
             my_list = line.split(" ")
             obj = eval("{}()".format(my_list[0]))
+            for item in my_list[1:]:
+                listy = item.split('=')
+                item_type = literal_eval(listy[1])
+                if type(item_type) is str:
+                    listy[1] = listy[1].replace('_', ' ')
+                    var = listy[1][1:-1].replace('"', '\\"')
+                    setattr(obj, listy[0], var)
+                elif type(item_type) is int or type(item_type) is float:
+                    setattr(obj, listy[0], eval(listy[1]))
             obj.save()
             print("{}".format(obj.id))
         except SyntaxError:
