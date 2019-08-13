@@ -1,6 +1,7 @@
 #!/usr/bin/python3
 """This is the console for AirBnB"""
 import cmd
+from ast import literal_eval
 from sys import argv
 from models import storage
 from datetime import datetime
