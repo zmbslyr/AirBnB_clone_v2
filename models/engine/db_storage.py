@@ -6,6 +6,7 @@ import models
 from models.city import City
 from models.state import State
 
+
 class DBStorage:
 
     __engine = None
@@ -14,7 +15,8 @@ class DBStorage:
     def __init__(self):
         self.__engine = db.create_engine("mysql+mysqldb://{}:{}@{}/{}".format(
             getenv("HBNB_MYSQL_USER"), getenv("HBNB_MYSQL_PWD"),
-            getenv("HBNB_MYSQL_HOST"), getenv("HBNB_MYSQL_DB"), pool_pre_ping=True))
+            getenv("HBNB_MYSQL_HOST"), getenv("HBNB_MYSQL_DB"),
+            pool_pre_ping=True))
 
         if getenv('HBNB_ENV') == 'test':
             models.base_model.Base.metadata.drop_all(self.__engine)
@@ -22,12 +24,17 @@ class DBStorage:
     def all(self, cls=None):
         a_dict = {}
         if cls is None:
-            query = self.__session.query(User, State, City, Amenity, Place, Review).all()
+            query = self.__session.query(User,
+                                         State,
+                                         City,
+                                         Amenity,
+                                         Place,
+                                         Review).all()
         else:
             query = self.__session.query(cls).all()
         for obj in query:
             key = obj.__class__.__name__ + str(obj.id)
-            a_dict.update({key:obj})
+            a_dict.update({key: obj})
         return (a_dict)
 
     def new(self, obj):
