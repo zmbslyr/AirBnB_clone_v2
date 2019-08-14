@@ -1,7 +1,7 @@
 #!/usr/bin/python3
 """This is the place class"""
-from models.base_model import BaseModel, Base
 from models.base_model import BaseModel
+from models.base_model import BaseModel, Base
 from sqlalchemy import Column, String, Integer, Float, ForeignKey, Table
 from sqlalchemy.orm import relationship
 import os
@@ -40,7 +40,7 @@ class Place(BaseModel, Base):
         amenity_ids: list of Amenity ids
     """
     __tablename__ = "places"
-    if os.getenv("HBNB_TYPE_STORAGE" == "db"):
+    if os.getenv("HBNB_TYPE_STORAGE") == "db":
         city_id = Column(String(60), ForeignKey("cities.id"), nullable=False)
         user_id = Column(String(60), ForeignKey("users.id"), nullable=False)
         name = Column(String(128), nullable=False)

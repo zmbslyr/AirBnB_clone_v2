@@ -2,15 +2,20 @@
 from os import getenv
 import sqlalchemy as db
 from sqlalchemy.orm import sessionmaker, scoped_session
-import models
 from models.city import City
 from models.state import State
+from models.user import User
+from models.amenity import Amenity
+from models.place import Place
+from models.review import Review
+import models
 
 
 class DBStorage:
 
     __engine = None
     __session = None
+    __session_factory = None
 
     def __init__(self):
         self.__engine = db.create_engine("mysql+mysqldb://{}:{}@{}/{}".format(
@@ -54,9 +59,12 @@ class DBStorage:
             self.__session.delete(obj)
 
     def reload(self):
+        """Reload mySQL tables"""
         models.base_model.Base.metadata.create_all(self.__engine)
-        session_factory = scoped_session(sessionmaker(bind=self.__engine))
-
+        if self.__session_factory is None:
+            self.__session_factory = scoped_session(
+                sessionmaker(bind=self.__engine)
+            )
         if self.__session is not None:
             self.__session.close()
-        self.__session = session_factory(expire_on_commit=False)
+        self.__session = self.__session_factory(expire_on_commit=False)
