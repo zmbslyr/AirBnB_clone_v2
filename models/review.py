@@ -2,6 +2,7 @@
 """This is the review class"""
 from models.base_model import BaseModel, Base
 from sqlalchemy import Column, String, ForeignKey
+import os
 
 
 class Review(BaseModel, Base):
