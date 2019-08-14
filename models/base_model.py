@@ -31,10 +31,12 @@ class BaseModel:
         """
         if kwargs:
             for key, value in kwargs.items():
-                if (key == "created_at" or key == "updated_at") and key != "__class__":
+                if (key == "created_at" or key == "updated_at")/
+                and key != "__class__":
                     time = datetime.strptime(value, "%Y-%m-%dT%H:%M:%S.%f")
                     setattr(self, key, time)
-                if (key != "created_at" and key != "updated_at") and key != "__class__":
+                if (key != "created_at" and key != "updated_at")/
+                and key != "__class__":
                     setattr(self, key, value)
         else:
             self.id = str(uuid.uuid4())

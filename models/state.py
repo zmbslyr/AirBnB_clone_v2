@@ -6,6 +6,7 @@ from sqlalchemy.orm import relationship
 import models
 import os
 
+
 class State(BaseModel, Base):
     """This is the class for State
     Attributes:
@@ -14,14 +15,15 @@ class State(BaseModel, Base):
     __tablename__ = 'states'
     if os.getenv("HBNB_TYPE_STORAGE") == "db":
         name = Column(String(128), nullable=False)
-        cities = relationship('City', cascade='all, delete-orphan', back_populates='state')
+        cities = relationship/
+        ('City', cascade='all, delete-orphan', back_populates='state')
     else:
         name = ""
 
     @property
     def cities(self):
         a_list = []
-        attr = models.storage.all(models.city.City).items()        
+        attr = models.storage.all(models.city.City).items()
         for key, val in attr.items():
             copy_dict = val.__dict__
             if copy_dict['state_id'] == self.id:
