@@ -1,9 +1,27 @@
 #!/usr/bin/python3
 """This is the place class"""
 from models.base_model import BaseModel, Base
-from sqlalchemy import Column, String, Integer, Float,ForeignKey
+from models.base_model import BaseModel
+from sqlalchemy import Column, String, Integer, Float, ForeignKey, Table
+from sqlalchemy.orm import relationship
 import os
+import models
 
+
+place_amenity = Table(
+    "place_amenity",
+    Base.metadata,
+    Column("place_id",
+           String(60),
+           ForeignKey("places.id"),
+           primary_key=True,
+           nullable=False),
+    Column("amenity_id",
+           String(60),
+           ForeignKey("amenities.id"),
+           primary_key=True,
+           nullable=False)
+)
 
 class Place(BaseModel, Base):
     """This is the class for Place
@@ -32,6 +50,13 @@ class Place(BaseModel, Base):
         price_by_night = Column(Integer, nullable=False, default=0)
         latitude = Column(Float, nullable=False, default=0)
         longitude = Column(Float, nullable=False, default=0)
+        reviews = relationship("Review", back_populates="place")
+        amenities = relationship(
+            "Amenity", secondary="place_amenity",
+            back_populates="place_amenities",
+            viewonly=False)
+        city = relationship("City", back_populates="places")
+        user = relationship("User", back_populates="places")
     else:
         city_id = ""
         user_id = ""
@@ -44,3 +69,30 @@ class Place(BaseModel, Base):
         latitude = 0.0
         longitude = 0.0
         amenity_ids = []
+
+    @property
+    def review(self):
+        """Getter for review"""
+        dic = models.storage.all("Review")
+        lst = []
+        for i in dic.values():
+            if i.place_id == self.id:
+                lst.append(i)
+        return lst
+
+    @property
+    def amenities(self):
+        """Getter for amenities"""
+        objList = []
+        objs = models.storage.all("Amenity")
+        for i in objs.values():
+            if i.id in amenity_id:
+                objList.append(i)
+        return objList
+
+    @amenities.setter
+    def amenities(self, obj):
+        """Setter for amenities"""
+        if isinstance(obj, Amenity):
+            if self.id == obj.place_id:
+                self.amenity_ids.append(obj.id)
