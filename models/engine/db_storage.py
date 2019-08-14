@@ -3,7 +3,8 @@ from os import getenv
 import sqlalchemy as db
 from sqlalchemy.orm import sessionmaker, scoped_session
 import models
-
+from models.city import City
+from models.state import State
 
 class DBStorage:
 
@@ -16,28 +17,23 @@ class DBStorage:
             getenv("HBNB_MYSQL_HOST"), getenv("HBNB_MYSQL_DB"), pool_pre_ping=True))
 
         if getenv('HBNB_ENV') == 'test':
-            Base.metadata.drop_all(self.__engine)
-
-        Session = sessionmaker(bind=self.__engine)
-        self.__session = Session()
+            models.base_model.Base.metadata.drop_all(self.__engine)
 
     def all(self, cls=None):
+        a_dict = {}
         if cls is None:
-            query = self.__session.query(User, state.State, city.City, Amenity, Place, Review).all()
+            query = self.__session.query(User, State, City, Amenity, Place, Review).all()
         else:
             query = self.__session.query(cls).all()
-        print(query)
-        print(type(query))
-        return ({})
+        for obj in query:
+            key = obj.__class__.__name__ + str(obj.id)
+            a_dict.update({key:obj})
+        return (a_dict)
 
     def new(self, obj):
         """Method to add object to database session"""
 
-        try:
-            newObj = obj
-            self.__session.add(newObj)
-        except:
-            raise(UsageError("Usage: DBStorage.new(<obj>)"))
+        self.__session.add(obj)
 
     def save(self):
         """Method to save all changes to the session"""
@@ -51,9 +47,9 @@ class DBStorage:
             self.__session.delete(obj)
 
     def reload(self):
-        City = models.city.City()
-        State = models.state.State()
         models.base_model.Base.metadata.create_all(self.__engine)
-        session_factory = sessionmaker(bind=self.__engine, expire_on_commit=False)
-        Session = scoped_session(session_factory)
-        self.__session = Session()
+        session_factory = scoped_session(sessionmaker(bind=self.__engine))
+
+        if self.__session is not None:
+            self.__session.close()
+        self.__session = session_factory(expire_on_commit=False)
