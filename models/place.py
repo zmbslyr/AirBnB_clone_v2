@@ -1,30 +1,9 @@
 #!/usr/bin/python3
 """This is the place class"""
-from models.base_model import BaseModel
-from models.base_model import BaseModel, Base
-from sqlalchemy import Column, String, Integer, Float, ForeignKey, Table
-from sqlalchemy.orm import relationship
-import os
+# from models.base_model import BaseModel
 import models
 
-
-place_amenity = Table(
-    "place_amenity",
-    Base.metadata,
-    Column("place_id",
-           String(60),
-           ForeignKey("places.id"),
-           primary_key=True,
-           nullable=False),
-    Column("amenity_id",
-           String(60),
-           ForeignKey("amenities.id"),
-           primary_key=True,
-           nullable=False)
-)
-
-
-class Place(BaseModel, Base):
+class Place(models.base_model.BaseModel):
     """This is the class for Place
     Attributes:
         city_id: city id
@@ -39,61 +18,14 @@ class Place(BaseModel, Base):
         longitude: longitude in float
         amenity_ids: list of Amenity ids
     """
-    __tablename__ = "places"
-    if os.getenv("HBNB_TYPE_STORAGE") == "db":
-        city_id = Column(String(60), ForeignKey("cities.id"), nullable=False)
-        user_id = Column(String(60), ForeignKey("users.id"), nullable=False)
-        name = Column(String(128), nullable=False)
-        description = Column(String(1024), nullable=False)
-        number_rooms = Column(Integer, nullable=False, default=0)
-        number_bathrooms = Column(Integer, nullable=False, default=0)
-        max_guest = Column(Integer, nullable=False, default=0)
-        price_by_night = Column(Integer, nullable=False, default=0)
-        latitude = Column(Float, nullable=False, default=0)
-        longitude = Column(Float, nullable=False, default=0)
-        reviews = relationship("Review", back_populates="place")
-        amenities = relationship(
-            "Amenity", secondary="place_amenity",
-            back_populates="place_amenities",
-            viewonly=False)
-        city = relationship("City", back_populates="places")
-        user = relationship("User", back_populates="places")
-    else:
-        city_id = ""
-        user_id = ""
-        name = ""
-        description = ""
-        number_rooms = 0
-        number_bathrooms = 0
-        max_guest = 0
-        price_by_night = 0
-        latitude = 0.0
-        longitude = 0.0
-        amenity_ids = []
-
-    @property
-    def review(self):
-        """Getter for review"""
-        dic = models.storage.all("Review")
-        lst = []
-        for i in dic.values():
-            if i.place_id == self.id:
-                lst.append(i)
-        return lst
-
-    @property
-    def amenities(self):
-        """Getter for amenities"""
-        objList = []
-        objs = models.storage.all("Amenity")
-        for i in objs.values():
-            if i.id in amenity_id:
-                objList.append(i)
-        return objList
-
-    @amenities.setter
-    def amenities(self, obj):
-        """Setter for amenities"""
-        if isinstance(obj, Amenity):
-            if self.id == obj.place_id:
-                self.amenity_ids.append(obj.id)
+    city_id = ""
+    user_id = ""
+    name = ""
+    description = ""
+    number_rooms = 0
+    number_bathrooms = 0
+    max_guest = 0
+    price_by_night = 0
+    latitude = 0.0
+    longitude = 0.0
+    amenity_ids = []
