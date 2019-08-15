@@ -3,12 +3,12 @@
 import uuid
 import models
 from datetime import datetime
-import sqlalchemy as SQA
+import sqlalchemy
 from sqlalchemy import Column, Integer, String, DateTime
 from sqlalchemy.ext.declarative import declarative_base
 
 Base = declarative_base()
-
+fmt = '"%Y-%m-%dT%H:%M:%S.%f"'
 
 class BaseModel:
     """This class will defines all common attributes/methods
@@ -29,12 +29,26 @@ class BaseModel:
             created_at: creation date
             updated_at: updated date
         """
+        # if kwargs:
+        #     if 'id' not in kwargs:
+        #         self.id = str(uuid.uuid4())
+        #     if 'created_at' not in kwargs:
+        #         self.created_at = datetime.now()
+        #     else:
+        #         kwargs['created_at'] = datetime.strptime(kwargs["created_at"], fmt)
+        #     if 'updated_at' not in kwargs:
+        #         self.created_at = datetime.now()
+        #     else:
+        #         kwargs['updated_at'] = datetime.strptime(kwargs['updated_at'], fmt)
+        #     for key, val in kwargs.items():
+        #         if key != '__class__':
+        #             setattr(self, key, val)
         if kwargs:
             for key, value in kwargs.items():
                 if (key == "created_at" or key == "updated_at") and key != "__class__":
                     time = datetime.strptime(value, "%Y-%m-%dT%H:%M:%S.%f")
                     setattr(self, key, time)
-                if (key != "created_at" and key != "updated_at") and key != "__class__":
+                if key != "created_at" and key != "updated_at" and key != "__class__":
                     setattr(self, key, value)
         else:
             self.id = str(uuid.uuid4())
@@ -67,8 +81,17 @@ class BaseModel:
         """
         my_dict = dict(self.__dict__)
         my_dict["__class__"] = str(type(self).__name__)
-        my_dict["created_at"] = self.created_at.isoformat()
-        my_dict["updated_at"] = self.updated_at.isoformat()
-        if "_sa_instance_state" in self.__dict__:
-            del my_dict["_sa_instance_state"]
+        try:
+            my_dict["created_at"] = self.created_at.isoformat()
+        except AttributeError:
+            pass
+        try:
+            my_dict["updated_at"] = self.updated_at.isoformat()
+        except AttributeError:
+            pass
+        if '_sa_instance_state' in my_dict:
+            del my_dict['_sa_instance_state']
         return my_dict
+
+    def delete(self):
+        models.storage.delete(self)
