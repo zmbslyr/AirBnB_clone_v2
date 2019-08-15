@@ -33,11 +33,11 @@ class Place(BaseModel, Base):
         price_by_night = Column(Integer, nullable=False, default=0)
         latitude = Column(Float, nullable=True, default=0)
         longitude = Column(Float, nullable=True, default=0)
-        reviews = relationship("Review", back_populates="place")
-        amenities = relationship(
-            "Amenity", secondary="place_amenity",
-            back_populates="place_amenities",
-            viewonly=False)
+#        reviews = relationship("Review", back_populates="place")
+#        amenities = relationship(
+#            "Amenity", secondary="place_amenity",
+#            back_populates="place_amenities",
+#            viewonly=False)
         city = relationship("City", back_populates="places")
         user = relationship("User", back_populates="places")
     else:
