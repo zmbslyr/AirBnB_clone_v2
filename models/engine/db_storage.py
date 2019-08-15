@@ -5,11 +5,11 @@ from sqlalchemy.orm import sessionmaker, scoped_session
 import models
 from models.city import City
 from models.state import State
-# from models.review import Review
-# from models.amenity import Amenity
-# from models.user import User
-# from models.place import Place
-# from models.base_model import BaseModel
+from models.review import Review
+from models.amenity import Amenity
+from models.user import User
+from models.place import Place
+from models.base_model import BaseModel, Base
 
 class DBStorage:
 
@@ -25,15 +25,24 @@ class DBStorage:
             Base.metadata.drop_all(self.__engine)
 
     def all(self, cls=None):
-        if cls is None:
-            print("Whoops")
-            query = self.__session.query(State, City)
-        else:
-            print("KYLES MOM")
+        a_dict = {}
+#        list_of_classes = [User, State, City, Amenity, Place, Review]
+        list_of_classes = [State, City]
+        if cls is not None:
             query = self.__session.query(cls).all()
-        print(query)
-        print(type(query))
-        return ({})
+            for obj in query:
+                dict_of_obj = obj.to_dict()
+                key = dict_of_obj['__class__'] + '.' + dict_of_obj['id']
+                a_dict[key] = obj
+        elif cls is None:
+            for classes in list_of_classes:
+                query = self.__session.query(classes).all()
+                for obj in query:
+                    dict_of_obj = obj.to_dict()
+                    key = dict_of_obj['__class__'] + '.' + dict_of_obj['id']
+                    a_dict[key] = obj
+        return (a_dict)
+
 
     def new(self, obj):
         """Method to add object to database session"""
@@ -53,7 +62,7 @@ class DBStorage:
             self.__session.delete(obj)
 
     def reload(self):
-        models.base_model.Base.metadata.create_all(self.__engine)
+        Base.metadata.create_all(self.__engine)
         session_factory = sessionmaker(bind=self.__engine, expire_on_commit=False)
         Session = scoped_session(session_factory)
         self.__session = Session()
