@@ -35,7 +35,6 @@ class Place(BaseModel, Base):
         price_by_night = Column(Integer, nullable=False, default=0)
         latitude = Column(Float, nullable=True)
         longitude = Column(Float, nullable=True)
-        amenity_ids = []
         reviews = relationship(
             'Review', back_populates='place',
             cascade='all, delete, delete-orphan')
@@ -52,12 +51,12 @@ class Place(BaseModel, Base):
         longitude = 0.0
         amenity_ids = []
 
-        @property
-        def reviews(self):
-            """Review getter - return list of filtered reviews."""
-            reviews_instances = []
-            reviews_dict = models.storage.all('Review')
-            for key, value in reviews_dict.items():
-                if self.id == value.place_id:
-                    reviews_instances.append(value)
-            return reviews_instances
+    @property
+    def reviews(self):
+        """Review getter - return list of filtered reviews."""
+        reviews_instances = []
+        reviews_dict = models.storage.all('Review')
+        for key, value in reviews_dict.items():
+            if self.id == value.place_id:
+                reviews_instances.append(value)
+        return reviews_instances
