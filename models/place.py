@@ -14,6 +14,7 @@ place_amenity = Table('place_amenity', Base.metadata,
                       Column('amenity_id', String(60),
                              ForeignKey('amenities.id'), nullable=False))
 
+
 class Place(BaseModel, Base):
     """This is the class for Place
     Attributes:
@@ -41,6 +42,7 @@ class Place(BaseModel, Base):
         price_by_night = Column(Integer, nullable=False, default=0)
         latitude = Column(Float, nullable=True)
         longitude = Column(Float, nullable=True)
+        amenity_ids = []
         reviews = relationship(
             'Review', back_populates='place',
             cascade='all, delete, delete-orphan')
@@ -74,7 +76,7 @@ class Place(BaseModel, Base):
 
     @property
     def amenities(self):
-        """Review getter - return list of amenity instances"""
+        """Return list of amenity instances"""
         return self.amenity_ids
 
     @amenities.setter
