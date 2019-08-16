@@ -8,6 +8,22 @@ import os
 import models
 
 
+place_amenity = Table(
+    "place_amenity",
+    Base.metadata,
+    Column("place_id",
+           String(60),
+           ForeignKey("places.id"),
+           primary_key=True,
+           nullable=False),
+    Column("amenity_id",
+           String(60),
+           ForeignKey("amenities.id"),
+           primary_key=True,
+           nullable=False)
+)
+
+
 class Place(BaseModel, Base):
     """This is the class for Place
     Attributes:
@@ -38,6 +54,9 @@ class Place(BaseModel, Base):
         reviews = relationship(
             'Review', back_populates='place',
             cascade='all, delete, delete-orphan')
+        amenities = relationship(
+            'Amenity', secondary=place_amenity,
+            viewonly=False, back_populates='place_amenities')
     else:
         city_id = ""
         user_id = ""
@@ -60,3 +79,14 @@ class Place(BaseModel, Base):
             if self.id == value.place_id:
                 reviews_instances.append(value)
         return reviews_instances
+
+    @property
+    def amenities(self):
+        """Review getter - return list of amenity instances"""
+        return self.amenity_ids
+
+    @amenities.setter
+    def amenities(self, obj):
+        """Setter for amenity list"""
+        if isinstance(obj, Amenity):
+            self.ammenity_ids.append(obj.id)
