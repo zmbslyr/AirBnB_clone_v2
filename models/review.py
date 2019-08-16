@@ -3,6 +3,7 @@
 # from models.base_model import BaseModel
 import models
 
+
 class Review(models.base_model.BaseModel):
     """This is the class for Review
     Attributes:
