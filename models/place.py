@@ -52,11 +52,11 @@ class Place(BaseModel, Base):
         amenity_ids = []
 
     @property
-    def review(self):
-        """Getter for review"""
-        dic = models.storage.all("Review")
-        lst = []
-        for i in dic.values():
-            if i.place_id == self.id:
-                lst.append(i)
-        return lst
+    def reviews(self):
+        """Review getter - return list of filtered reviews."""
+        reviews_instances = []
+        reviews_dict = models.storage.all('Review')
+        for key, value in reviews_dict.items():
+            if self.id == value.place_id:
+                reviews_instances.append(value)
+        return reviews_instances
