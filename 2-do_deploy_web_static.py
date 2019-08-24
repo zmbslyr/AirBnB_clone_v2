@@ -7,6 +7,7 @@ import fabric.api
 import os
 
 fabric.api.env.hosts = ['34.73.165.22', '34.73.177.149']
+fabric.api.env.key_file = "~/.ssh/id_rsa"
 
 
 def do_pack():
@@ -32,7 +33,7 @@ def do_deploy(path):
                    "releases/web_static_{}".format(date, date))
     fabric.api.run("rm /tmp/web_static_{}.tgz".format(date))
     fabric.api.run("mv /data/web_static/releases/web_static_{}/"
-                   "web_static/* /data/web_status/releases/"
+                   "web_static/* /data/web_static/releases/"
                    "web_static_{}/".format(date, date))
     fabric.api.run("rm -rf /data/web_static/releases/"
                    "web_static_{}/web_static".format(date))
