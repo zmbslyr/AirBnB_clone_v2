@@ -68,3 +68,7 @@ class FileStorage:
         index = type(obj).__name__ + "." + obj.id
         if index in self.__objects:
             del self.__objects[index]
+
+    def close(self):
+        """Deserialize"""
+        self.reload()
